@@ -1,0 +1,22 @@
+version: "3.7"
+services:
+  main:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - cache
+      - db
+    ports:
+      - "8080:8080"
+
+  cache:
+    image: redis
+
+  db:
+    image: mysql
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+
+  web:
+    image: nginx
