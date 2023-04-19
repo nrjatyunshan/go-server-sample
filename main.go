@@ -59,7 +59,12 @@ func test(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, "==================================\n\n")
 
 	// HTTP
-	resp, err := http.Get("http://web")
+	// 客户端默认会启用连接池,会重用连接和协程,导致追踪失败.
+	// 关闭 HTTP KeepAlive
+	t := http.DefaultTransport.(*http.Transport).Clone()
+	t.DisableKeepAlives = true
+	c := &http.Client{Transport: t}
+	resp, err := c.Get("http://web")
 	if err != nil {
 		panic(err.Error())
 	}
