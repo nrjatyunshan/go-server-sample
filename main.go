@@ -5,13 +5,37 @@ import (
 	"fmt"
 	"net/http"
 	"runtime"
+	"strconv"
 	"time"
 
 	"github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
 )
 
+func isPrime(num int) bool {
+	if num <= 1 {
+		return false
+	}
+	for i := 2; i*i <= num; i++ {
+		if num%i == 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func primeSum(num int) int {
+	sum := 0
+	for i := 2; i < num; i++ {
+		if isPrime(i) {
+			sum += i
+		}
+	}
+	return sum
+}
+
 func test(w http.ResponseWriter, req *http.Request) {
+
 	numIn := runtime.NumGoroutine()
 	// Redis
 	redisClient := redis.NewClient(&redis.Options{
@@ -79,6 +103,22 @@ func test(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, "============== Go =============\n")
 	fmt.Fprintf(w, "NumGoroutine: %d %d\n", numIn, numOut)
 	fmt.Fprintf(w, "==================================\n\n")
+
+	// 计算素数和,模仿耗时操作
+	query := req.URL.Query()
+	strNum := query.Get("num")
+	num, err := strconv.Atoi(strNum)
+	if err != nil {
+		fmt.Fprintf(w, "============== Sum =============\n")
+		fmt.Fprintf(w, "sum: %d\n", -1)
+		fmt.Fprintf(w, "==================================\n\n")
+
+	} else {
+		sum := primeSum(num)
+		fmt.Fprintf(w, "============== Sum =============\n")
+		fmt.Fprintf(w, "sum: %d\n", sum)
+		fmt.Fprintf(w, "==================================\n\n")
+	}
 }
 
 func main() {
