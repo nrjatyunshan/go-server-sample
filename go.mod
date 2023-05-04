@@ -10,4 +10,5 @@ require (
 require (
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.27.6 // indirect
+	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
 )
