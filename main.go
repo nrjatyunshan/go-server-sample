@@ -203,7 +203,23 @@ func main() {
 	http.HandleFunc("/log3", testLog3)
 	http.HandleFunc("/log4", testLog4)
 
-	// Start HTTP server
-	fmt.Println("Listening on localhost:8080")
-	http.ListenAndServe(":8080", nil)
+	// Start HTTP server in a Goroutine
+	go func() {
+		fmt.Println("Listening on localhost:8080")
+		http.ListenAndServe(":8080", nil)
+	}()
+
+	// TLS 
+	certPath := "/app/certificate/certificate.pem"
+	keyPath := "/app/certificate/private-key.pem"
+
+	// Start HTTPS server in a Goroutine
+	go func() {
+		fmt.Println("Listening on localhost:443")
+		err := http.ListenAndServeTLS(":443", certPath, keyPath, nil)
+		if err != nil {
+			fmt.Println("HTTPS server error:", err)
+		}
+	}()
+	select{}
 }
